@@ -1,3 +1,407 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --navy: #030e4f;
+  --navy-deep: #02093a;
+  --amber: #f49f1c;
+  --amber-hover: #e88f16;
+  --surface: #f7f8fc;
+  --card: #ffffff;
+  --border: #e2e6f0;
+  --muted: #8892a4;
+  --text: #111827;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--surface);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Typography ── */
+.font-display {
+  font-family: 'Syne', sans-serif;
+}
+
+/* ── Layout ── */
+.tc-page {
+  min-height: 100vh;
+  background: var(--surface);
+  padding: 2rem 1rem 4rem;
+}
+
+.tc-container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ── Card ── */
+.tc-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .tc-card {
+    padding: 2rem;
+  }
+}
+
+/* ── Section Header ── */
+.tc-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.tc-section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.tc-section-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #eef0fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.tc-section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Inputs ── */
+.tc-input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.625rem 0.875rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: #fafbfe;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tc-input:focus {
+  border-color: var(--navy);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(3, 14, 79, 0.07);
+}
+
+.tc-input::placeholder {
+  color: #b0b8c9;
+}
+
+textarea.tc-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ── Remove number arrows ── */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Select ── */
+select.tc-input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238892a4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
+/* ── Checkbox / Toggle ── */
+.tc-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.tc-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.tc-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.tc-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: #dde2ee;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.tc-toggle input:checked + .tc-toggle-track {
+  background: var(--navy);
+}
+
+.tc-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+}
+
+.tc-toggle input:checked ~ .tc-toggle-thumb {
+  transform: translateX(18px);
+}
+
+/* ── Buttons ── */
+.tc-btn-primary {
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.tc-btn-primary:hover { background: var(--navy-deep); }
+.tc-btn-primary:active { transform: scale(0.97); }
+
+.tc-btn-amber {
+  background: var(--amber);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.tc-btn-amber:hover { background: var(--amber-hover); }
+.tc-btn-amber:active { transform: scale(0.97); }
+
+.tc-btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tc-btn-ghost:hover {
+  border-color: #e57373;
+  color: #e57373;
+  background: #fff5f5;
+}
+
+/* ── Exercise Card ── */
+.exercise-card {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  background: #f9fafd;
+  transition: border-color 0.15s;
+}
+
+.exercise-card:focus-within {
+  border-color: #c0c8e8;
+}
+
+/* ── Set Row ── */
+.set-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Habit Item ── */
+.habit-item {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  background: #f9fafd;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.habit-item.completed {
+  border-color: #c0c8e8;
+  background: #f0f3fc;
+}
+
+/* ── Label ── */
+.tc-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+/* ── Stats strip ── */
+.stats-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.stat-pill {
+  background: #eef0fb;
+  color: var(--navy);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* ── Divider ── */
+.tc-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+
+/* ── Grid helpers ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 500px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ── Submit button ── */
+.tc-submit {
+  width: 100%;
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  margin-top: 0.5rem;
+}
+
+.tc-submit:hover { background: var(--navy-deep); }
+.tc-submit:active { transform: scale(0.99); }
+
+/* ── Header hero ── */
+.tc-header {
+  margin-bottom: 1.75rem;
+  padding: 0 0.25rem;
+}
+
+.tc-header h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 2.1rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: var(--navy);
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+@media (max-width: 480px) {
+  .tc-header h1 { font-size: 1.7rem; }
+}
+
+.tc-header p {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ── Date badge ── */
+.date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 10px;
+}
