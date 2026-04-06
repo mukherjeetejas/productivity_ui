@@ -26,12 +26,9 @@ export function useBodyMetrics(userId) {
       ]);
       setWeightHistory(w || []);
       setBodyFatHistory(b || []);
-
       const latestWeight = w?.at(-1)?.date;
       const latestFat = b?.at(-1)?.recordedDate;
-      if (isStale(latestWeight) || isStale(latestFat)) {
-        setShowPrompt(true);
-      }
+      if (isStale(latestWeight) || isStale(latestFat)) setShowPrompt(true);
     } catch (e) {
       console.error("Body metrics fetch failed:", e);
     } finally {
@@ -39,7 +36,7 @@ export function useBodyMetrics(userId) {
     }
   }
 
-  useEffect(() => { fetchAll(); }, [userId]);
+  useEffect(() => { if (userId) fetchAll(); }, [userId]);
 
   async function submitMetrics(weight, neck, waist) {
     setSubmitting(true);
@@ -58,15 +55,5 @@ export function useBodyMetrics(userId) {
     }
   }
 
-  return {
-    weightHistory,
-    bodyFatHistory,
-    loading,
-    showPrompt,
-    setShowPrompt,
-    submitting,
-    submitError,
-    submitMetrics,
-    refetch: fetchAll,
-  };
+  return { weightHistory, bodyFatHistory, loading, showPrompt, setShowPrompt, submitting, submitError, submitMetrics };
 }

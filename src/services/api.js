@@ -1,10 +1,30 @@
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "https://productivity-timecard.onrender.com";
 
 async function get(path) {
   const res = await fetch(`${BASE_URL}${path}`);
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.statusText}`);
   return res.json();
 }
+
+async function post(path, body) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `POST ${path} failed: ${res.statusText}`);
+  }
+  return res.json();
+}
+
+// ── Auth ──────────────────────────────────────────────────
+export const login = (userId, tempAuthentication) =>
+  post(`/user/${userId}/authenticate`, { tempAuthentication });
+
+export const createUser = (userData) =>
+  post(`/user`, userData);
 
 // ── Timecard ──────────────────────────────────────────────
 export const getToday = (userId) =>
@@ -21,15 +41,8 @@ export const getStreaks = (userId) =>
   get(`/user/${userId}/streaks`);
 
 // ── Submit timecard ───────────────────────────────────────
-export async function submitTimecard(userId, formData) {
-  const res = await fetch(`${BASE_URL}/timecard/${userId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
-  });
-  if (!res.ok) throw new Error(`Submit failed: ${res.statusText}`);
-  return res.json();
-}
+export const submitTimecard = (userId, formData) =>
+  post(`/timecard/${userId}`, formData);
 
 // ── Body metrics ──────────────────────────────────────────
 export const getWeightHistory = (userId) =>
@@ -38,22 +51,8 @@ export const getWeightHistory = (userId) =>
 export const getBodyFatHistory = (userId) =>
   get(`/user/${userId}/bodyFat`);
 
-export async function postWeight(userId, weight) {
-  const res = await fetch(`${BASE_URL}/user/${userId}/weight`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ weight }),
-  });
-  if (!res.ok) throw new Error(`Post weight failed: ${res.statusText}`);
-  return res.json();
-}
+export const postWeight = (userId, weight) =>
+  post(`/user/${userId}/weight`, { weight });
 
-export async function postBodyFat(userId, neckCircumference, waistCircumference) {
-  const res = await fetch(`${BASE_URL}/user/${userId}/bodyFat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ neckCircumference, waistCircumference }),
-  });
-  if (!res.ok) throw new Error(`Post body fat failed: ${res.statusText}`);
-  return res.json();
-}
+export const postBodyFat = (userId, neckCircumference, waistCircumference) =>
+  post(`/user/${userId}/bodyFat`, { neckCircumference, waistCircumference });

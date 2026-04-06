@@ -1,5 +1,6 @@
 import { useDashboard } from "../hooks/useDashboard";
 import { useBodyMetrics } from "../hooks/useBodyMetrics";
+import { useAuth } from "../context/AuthContext";
 import StreakCard from "../components/dashboard/StreakCard";
 import ChartCard from "../components/dashboard/ChartCard";
 import LineChart from "../components/dashboard/LineChart";
@@ -8,7 +9,6 @@ import HabitsHeatmap from "../components/dashboard/HabitsHeatmap";
 import BodyMetricsSection from "../components/dashboard/BodyMetricsSection";
 import UpdateMetricsModal from "../components/dashboard/UpdateMetricsModal";
 
-const USER_ID = "tejasMukherjee";
 const DAYS = 7;
 
 function LoadingScreen() {
@@ -45,7 +45,10 @@ function ErrorScreen({ message, onRetry }) {
 }
 
 export default function DashboardPage() {
-  const { streaks, rangeData, loading, error, refetch } = useDashboard(USER_ID, DAYS);
+  const { user } = useAuth();
+  const userId = user?.id;
+
+  const { streaks, rangeData, loading, error, refetch } = useDashboard(userId, DAYS);
   const {
     weightHistory,
     bodyFatHistory,
@@ -54,13 +57,13 @@ export default function DashboardPage() {
     submitting,
     submitError,
     submitMetrics,
-  } = useBodyMetrics(USER_ID);
+  } = useBodyMetrics(userId);
 
-  const caloriesData = rangeData.map((d) => ({ date: d.date, value: d.calories?.calories ?? null }));
-  const proteinData  = rangeData.map((d) => ({ date: d.date, value: d.calories?.proteinGrams ?? null }));
-  const dsaData      = rangeData.map((d) => ({ date: d.date, value: d.dsa?.problemsSolved ?? null }));
-  const dsaMinutesData = rangeData.map((d) => ({ date: d.date, value: d.dsa?.minutesSpent ?? null }));
-  const gymData      = rangeData.map((d) => ({
+  const caloriesData     = rangeData.map((d) => ({ date: d.date, value: d.calories?.calories ?? null }));
+  const proteinData      = rangeData.map((d) => ({ date: d.date, value: d.calories?.proteinGrams ?? null }));
+  const dsaData          = rangeData.map((d) => ({ date: d.date, value: d.dsa?.problemsSolved ?? null }));
+  const dsaMinutesData   = rangeData.map((d) => ({ date: d.date, value: d.dsa?.minutesSpent ?? null }));
+  const gymData          = rangeData.map((d) => ({
     date: d.date,
     value: d.gym?.workoutType && d.gym.workoutType !== "REST" ? 1 : 0,
   }));
@@ -87,12 +90,11 @@ export default function DashboardPage() {
       )}
 
       <div className="tc-container">
-        {/* Header */}
         <div className="tc-header" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
           <div>
             <h1>Dashboard</h1>
             <p style={{ fontSize: "0.875rem", color: "#8892a4", marginTop: "4px" }}>
-              Last {DAYS} days · {USER_ID}
+              Last {DAYS} days · {user?.name || userId}
             </p>
           </div>
           <button onClick={refetch} style={{
@@ -104,14 +106,12 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* ── Body Metrics ── */}
         <BodyMetricsSection
           weightHistory={weightHistory}
           bodyFatHistory={bodyFatHistory}
           onLogClick={() => setShowPrompt(true)}
         />
 
-        {/* ── Streaks ── */}
         <section style={{ marginBottom: "24px" }}>
           <h2 style={{
             fontFamily: "'Syne', sans-serif", fontSize: "0.72rem", fontWeight: 700,
@@ -126,7 +126,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* ── Trends ── */}
         <section>
           <h2 style={{
             fontFamily: "'Syne', sans-serif", fontSize: "0.72rem", fontWeight: 700,

@@ -1,5 +1,6 @@
 import { useTimecardForm } from "../../hooks/useTimecardForm";
-import { submitTimecard } from "../../services/timecardService";
+import { submitTimecard } from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 import DSASection from "./sections/DSASection";
 import GymSection from "./sections/GymSection";
 import CaloriesSection from "./sections/CaloriesSection";
@@ -15,6 +16,7 @@ function getDateString() {
 }
 
 export default function TimecardForm() {
+  const { user } = useAuth();
   const {
     formData,
     handleChange,
@@ -31,7 +33,7 @@ export default function TimecardForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await submitTimecard("tejasMukherjee", formData);
+      await submitTimecard(user.id, formData);
       alert("Submitted successfully 🚀");
     } catch {
       alert("Submission failed");
@@ -41,9 +43,8 @@ export default function TimecardForm() {
   return (
     <div className="tc-page">
       <div className="tc-container">
-        {/* Header */}
         <div className="tc-header">
-          <h1>Submit Timecard</h1>
+          <h1>Daily Timecard</h1>
           <div className="date-badge">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
               <rect x="1" y="2" width="11" height="10" rx="2" stroke="#8892a4" strokeWidth="1.2"/>
@@ -59,7 +60,6 @@ export default function TimecardForm() {
             data={formData.dsa}
             onChange={(field, value) => handleChange("dsa", field, value)}
           />
-
           <GymSection
             data={formData.gym}
             onChange={(field, value) => handleChange("gym", field, value)}
@@ -70,19 +70,15 @@ export default function TimecardForm() {
             updateExercise={updateExercise}
             updateSet={updateSet}
           />
-
           <CaloriesSection
             data={formData.calories}
             onChange={(field, value) => handleChange("calories", field, value)}
           />
-
           <HabitsSection
             data={formData.habits}
             onChange={handleHabitChange}
           />
-
           <NotesSection value={formData.notes} onChange={setNotes} />
-
           <button type="submit" className="tc-submit">
             Submit Timecard →
           </button>
