@@ -1,5 +1,6 @@
 import { useDashboard } from "../hooks/useDashboard";
 import { useBodyMetrics } from "../hooks/useBodyMetrics";
+import { useHabits, habitIcon, habitLabel } from "../hooks/useHabits";
 import { useAuth } from "../context/AuthContext";
 import StreakCard from "../components/dashboard/StreakCard";
 import ChartCard from "../components/dashboard/ChartCard";
@@ -10,6 +11,9 @@ import BodyMetricsSection from "../components/dashboard/BodyMetricsSection";
 import UpdateMetricsModal from "../components/dashboard/UpdateMetricsModal";
 
 const DAYS = 7;
+
+// One distinct color per habit slot
+const HABIT_COLORS = ["#030e4f","#7c3aed","#059669","#d97706","#0891b2","#db2777","#65a30d","#dc2626"];
 
 function LoadingScreen() {
   return (
@@ -36,9 +40,7 @@ function ErrorScreen({ message, onRetry }) {
         <button onClick={onRetry} style={{
           background: "#030e4f", color: "white", border: "none",
           borderRadius: "8px", padding: "8px 20px", cursor: "pointer", fontSize: "0.85rem",
-        }}>
-          Retry
-        </button>
+        }}>Retry</button>
       </div>
     </div>
   );
@@ -49,16 +51,17 @@ export default function DashboardPage() {
   const userId = user?.id;
 
   const { streaks, rangeData, loading, error, refetch } = useDashboard(userId, DAYS);
+  const { habits } = useHabits(userId);
   const {
-    weightHistory,
-    bodyFatHistory,
-    showPrompt,
-    setShowPrompt,
-    submitting,
-    submitError,
-    submitMetrics,
+    weightHistory, bodyFatHistory,
+    showPrompt, setShowPrompt,
+    submitting, submitError, submitMetrics,
   } = useBodyMetrics(userId);
 
+  // Streaks: use habitStreaks from user object (already has all keys dynamically)
+  const streakKeys = streaks ? Object.keys(streaks) : [];
+
+  // Chart data
   const caloriesData     = rangeData.map((d) => ({ date: d.date, value: d.calories?.calories ?? null }));
   const proteinData      = rangeData.map((d) => ({ date: d.date, value: d.calories?.proteinGrams ?? null }));
   const dsaData          = rangeData.map((d) => ({ date: d.date, value: d.dsa?.problemsSolved ?? null }));
@@ -67,16 +70,25 @@ export default function DashboardPage() {
     date: d.date,
     value: d.gym?.workoutType && d.gym.workoutType !== "REST" ? 1 : 0,
   }));
+
+  // Per-habit completion trend: 1 = done, 0 = not done, null = no entry
+  const habitTrendData = habits.map((habitKey, i) => ({
+    key: habitKey,
+    color: HABIT_COLORS[i % HABIT_COLORS.length],
+    data: rangeData.map((d) => ({
+      date: d.date,
+      value: d._empty ? null : (d.habits?.[habitKey]?.completed ? 1 : 0),
+    })),
+  }));
+
+  // Total habits completed per day
   const habitsCompletionData = rangeData.map((d) => {
     if (d._empty || !d.habits) return { date: d.date, value: null };
-    const habits = Object.values(d.habits);
-    return { date: d.date, value: habits.filter((h) => h.completed).length };
+    return { date: d.date, value: Object.values(d.habits).filter((h) => h.completed).length };
   });
 
   if (loading) return <LoadingScreen />;
   if (error)   return <ErrorScreen message={error} onRetry={refetch} />;
-
-  const streakKeys = streaks ? Object.keys(streaks) : [];
 
   return (
     <div className="tc-page">
@@ -101,9 +113,7 @@ export default function DashboardPage() {
             background: "white", border: "1.5px solid #e2e6f0", borderRadius: "9px",
             padding: "7px 14px", fontSize: "0.8rem", fontWeight: 500,
             color: "#8892a4", cursor: "pointer", marginTop: "6px",
-          }}>
-            ↻ Refresh
-          </button>
+          }}>↻ Refresh</button>
         </div>
 
         <BodyMetricsSection
@@ -112,13 +122,12 @@ export default function DashboardPage() {
           onLogClick={() => setShowPrompt(true)}
         />
 
+        {/* Streaks — dynamic from user.habitStreaks keys */}
         <section style={{ marginBottom: "24px" }}>
           <h2 style={{
             fontFamily: "'Syne', sans-serif", fontSize: "0.72rem", fontWeight: 700,
             letterSpacing: "0.1em", textTransform: "uppercase", color: "#8892a4", marginBottom: "10px",
-          }}>
-            Streaks
-          </h2>
+          }}>Streaks</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "10px" }}>
             {streakKeys.map((key) => (
               <StreakCard key={key} name={key} data={streaks[key]} />
@@ -126,13 +135,12 @@ export default function DashboardPage() {
           </div>
         </section>
 
+        {/* Trends */}
         <section>
           <h2 style={{
             fontFamily: "'Syne', sans-serif", fontSize: "0.72rem", fontWeight: 700,
             letterSpacing: "0.1em", textTransform: "uppercase", color: "#8892a4", marginBottom: "10px",
-          }}>
-            Trends
-          </h2>
+          }}>Trends</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "12px" }}>
@@ -159,19 +167,47 @@ export default function DashboardPage() {
                   <span key={d.date} style={{
                     fontSize: "0.7rem", fontWeight: 500, padding: "2px 8px",
                     borderRadius: "999px", background: "#eef0fb", color: "#030e4f",
-                  }}>
-                    {d.gym.workoutType}
-                  </span>
+                  }}>{d.gym.workoutType}</span>
                 ))}
               </div>
               <BarChart data={gymData} color="#030e4f" label="gym" />
             </ChartCard>
 
+            {/* Habits section — heatmap + per-habit trend lines */}
             <ChartCard title="Habits" icon="✅" subtitle="daily completion grid">
-              <HabitsHeatmap rangeData={rangeData} />
-              <div style={{ marginTop: "10px" }}>
-                <LineChart data={habitsCompletionData} color="#059669" label="habits" />
-              </div>
+              <HabitsHeatmap rangeData={rangeData} habits={habits} />
+
+              {habits.length > 0 && (
+                <>
+                  {/* Total per day */}
+                  <div style={{ marginTop: "16px", marginBottom: "4px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#8892a4", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>
+                      Total completed per day
+                    </span>
+                  </div>
+                  <LineChart data={habitsCompletionData} color="#059669" label="habits-total" />
+
+                  {/* Per-habit breakdown */}
+                  <div style={{ marginTop: "16px", marginBottom: "4px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#8892a4", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>
+                      Per habit (1 = done, 0 = missed)
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    {habitTrendData.map(({ key, color, data }) => (
+                      <div key={key}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: color, flexShrink: 0 }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8892a4", fontWeight: 500 }}>
+                            {habitIcon(key)} {habitLabel(key)}
+                          </span>
+                        </div>
+                        <LineChart data={data} color={color} label={`habit-${key}`} />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </ChartCard>
           </div>
         </section>

@@ -20,6 +20,7 @@ async function post(path, body) {
 }
 
 // ── Auth ──────────────────────────────────────────────────
+// authenticate returns the full user object (userWeights, bodyFats, habitStreaks, etc.)
 export const login = (userId, tempAuthentication) =>
   post(`/user/${userId}/authenticate`, { tempAuthentication });
 
@@ -56,3 +57,9 @@ export const postWeight = (userId, weight) =>
 
 export const postBodyFat = (userId, neckCircumference, waistCircumference) =>
   post(`/user/${userId}/bodyFat`, { neckCircumference, waistCircumference });
+
+// ── Habits ────────────────────────────────────────────────
+export const getHabits = (userId) =>
+  get(`/user/${userId}/habits`);
+
+

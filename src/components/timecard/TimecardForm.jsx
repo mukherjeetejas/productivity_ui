@@ -1,4 +1,5 @@
 import { useTimecardForm } from "../../hooks/useTimecardForm";
+import { useHabits } from "../../hooks/useHabits";
 import { submitTimecard } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import DSASection from "./sections/DSASection";
@@ -9,26 +10,21 @@ import NotesSection from "./sections/NotesSection";
 
 function getDateString() {
   return new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
+    weekday: "long", month: "short", day: "numeric",
   });
 }
 
 export default function TimecardForm() {
   const { user } = useAuth();
+
+  // Fetch existing habit keys from backend
+  const { habits, loading: habitsLoading } = useHabits(user?.id);
+
   const {
-    formData,
-    handleChange,
-    handleHabitChange,
-    addExercise,
-    removeExercise,
-    addSet,
-    removeSet,
-    updateExercise,
-    updateSet,
-    setNotes,
-  } = useTimecardForm();
+    formData, handleChange, handleHabitChange, addHabitToForm,
+    addExercise, removeExercise, addSet, removeSet,
+    updateExercise, updateSet, setNotes,
+  } = useTimecardForm(habits);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,10 +70,15 @@ export default function TimecardForm() {
             data={formData.calories}
             onChange={(field, value) => handleChange("calories", field, value)}
           />
+
+          {/* habits from API + any added this session — all submitted together */}
           <HabitsSection
             data={formData.habits}
             onChange={handleHabitChange}
+            onAddHabit={addHabitToForm}
+            habitsLoading={habitsLoading}
           />
+
           <NotesSection value={formData.notes} onChange={setNotes} />
           <button type="submit" className="tc-submit">
             Submit Timecard →
