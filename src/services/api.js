@@ -43,7 +43,7 @@ export const getStreaks = (userId) =>
 
 // ── Submit timecard ───────────────────────────────────────
 export const submitTimecard = (userId, formData) =>
-  post(`/timecard/${userId}`, formData);
+  post(`/timecard/submit/${userId}`, formData);
 
 // ── Body metrics ──────────────────────────────────────────
 export const getWeightHistory = (userId) =>
