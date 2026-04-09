@@ -4,12 +4,13 @@ export default function UpdateMetricsModal({ onSubmit, onDismiss, submitting, er
   const [weight, setWeight] = useState("");
   const [neck, setNeck] = useState("");
   const [waist, setWaist] = useState("");
+  const [hip, setHip] = useState("");
 
-  const valid = weight && neck && waist;
+  const valid = weight && neck && waist && hip;
 
   function handleSubmit() {
     if (!valid) return;
-    onSubmit(parseFloat(weight), parseFloat(neck), parseFloat(waist));
+    onSubmit(parseFloat(weight), parseFloat(neck), parseFloat(waist), parseFloat(hip));
   }
 
   return (
@@ -23,10 +24,10 @@ export default function UpdateMetricsModal({ onSubmit, onDismiss, submitting, er
     }}>
       {/* Modal card */}
       <div style={{
-        background: "white", borderRadius: "18px",
-        padding: "28px 24px", width: "100%", maxWidth: "380px",
-        boxShadow: "0 20px 60px rgba(3,14,79,0.18)",
-        border: "1px solid #e2e6f0",
+        background: "white", borderRadius: "22px",
+        padding: "28px 26px", width: "100%", maxWidth: "420px",
+        boxShadow: "0 24px 80px rgba(3,14,79,0.14)",
+        border: "1px solid rgba(226,230,240,0.85)",
       }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "6px" }}>
@@ -84,7 +85,7 @@ export default function UpdateMetricsModal({ onSubmit, onDismiss, submitting, er
           Body fat measurements
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "6px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
           <div>
             <label style={{
               display: "block", fontSize: "0.72rem", fontWeight: 500,
@@ -113,6 +114,21 @@ export default function UpdateMetricsModal({ onSubmit, onDismiss, submitting, er
               placeholder="e.g. 91"
               value={waist}
               onChange={(e) => setWaist(e.target.value)}
+            />
+          </div>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <label style={{
+              display: "block", fontSize: "0.72rem", fontWeight: 500,
+              color: "#8892a4", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "6px",
+            }}>
+              Hip (cm) (female only)
+            </label>
+            <input
+              className="tc-input"
+              type="number"
+              placeholder="e.g. 91"
+              value={hip}
+              onChange={(e) => setHip(e.target.value)}
             />
           </div>
         </div>

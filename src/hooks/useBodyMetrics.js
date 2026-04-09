@@ -38,13 +38,13 @@ export function useBodyMetrics(userId) {
 
   useEffect(() => { if (userId) fetchAll(); }, [userId]);
 
-  async function submitMetrics(weight, neck, waist) {
+  async function submitMetrics(weight, neck, waist, hip) {
     setSubmitting(true);
     setSubmitError(null);
     try {
       await Promise.all([
         postWeight(userId, weight),
-        postBodyFat(userId, neck, waist),
+        postBodyFat(userId, neck, waist, hip),
       ]);
       setShowPrompt(false);
       await fetchAll();

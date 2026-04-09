@@ -92,6 +92,11 @@ export default function BodyMetricsSection({ weightHistory, bodyFatHistory, onLo
           value={latestFat?.waistCircumference}
           unit="cm"
         />
+        <StatPill
+          label="Hip"
+          value={latestFat?.hipCircumference}
+          unit="cm"
+        />
       </div>
 
       {/* Charts */}

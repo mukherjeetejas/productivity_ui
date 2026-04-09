@@ -55,8 +55,8 @@ export const getBodyFatHistory = (userId) =>
 export const postWeight = (userId, weight) =>
   post(`/user/${userId}/weight`, { weight });
 
-export const postBodyFat = (userId, neckCircumference, waistCircumference) =>
-  post(`/user/${userId}/bodyFat`, { neckCircumference, waistCircumference });
+export const postBodyFat = (userId, neckCircumference, waistCircumference, hipCircumference) =>
+  post(`/user/${userId}/bodyFat`, { neckCircumference, waistCircumference, hipCircumference});
 
 // ── Habits ────────────────────────────────────────────────
 export const getHabits = (userId) =>
